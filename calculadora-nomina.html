@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Nómina Integral | Tax & Fiscal Tools Pro</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#080c14',
+                        cardbg: '#0f172a',
+                        cyanNeon: '#00f0ff',
+                        blueNeon: '#3b82f6',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- FontAwesome Icons & Google Font -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Librerías Excel & PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #080c14; color: #f1f5f9; }
+        .glass-panel { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .drop-zone.dragover { border-color: #00f0ff; background-color: rgba(0, 240, 255, 0.05); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-30 glass-panel border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-cyan-500/20">
+                    <i class="fa-solid fa-users-gear"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400">
+                        Nómina Pro (SBC -> SD -> Base Gravable)
+                    </h1>
+                    <p class="text-[11px] text-slate-400 font-medium">Cálculo Inverso desde SBC, ISR, Subsidio e IMSS Masivo</p>
+                </div>
+            </div>
+            <a href="https://buymeacoffee.com/eduardorito" target="_blank" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 transition-all flex items-center gap-2">
+                <i class="fa-solid fa-mug-hot"></i> <span>Invítame un café</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 space-y-8">
+
+        <!-- Carga de Excel con Drag & Drop Activo -->
+        <section id="dropZone" class="drop-zone glass-panel rounded-2xl p-6 text-center border-2 border-dashed border-slate-700 hover:border-cyan-400 transition-all cursor-pointer relative" onclick="document.getElementById('excelFile').click()">
+            <input type="file" id="excelFile" accept=".xlsx, .xls" class="hidden" onchange="handleExcelUpload(event)">
+            <div class="space-y-2 pointer-events-none">
+                <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-2xl mx-auto border border-emerald-500/20">
+                    <i class="fa-solid fa-file-excel"></i>
+                </div>
+                <p class="font-bold text-slate-200 text-sm">Arrastra o selecciona tu archivo Excel (.xlsx)</p>
+                <p class="text-xs text-slate-400">Columnas requeridas: <span class="text-cyan-400 font-mono">Nombre</span>, <span class="text-cyan-400 font-mono">SBC</span>, <span class="text-cyan-400 font-mono">Dias</span>, <span class="text-cyan-400 font-mono">Antigüedad</span> (Años)</p>
+            </div>
+        </section>
+
+        <!-- Barra de Acciones con SELECTOR DE PERÍODO -->
+        <section class="glass-panel rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <label for="periodoSelect" class="text-xs font-bold text-slate-400 uppercase">Período de Nómina:</label>
+                <select id="periodoSelect" onchange="recalcularNomina()" class="bg-slate-900 text-cyan-300 font-mono font-bold text-xs border border-cyan-500/40 rounded-xl px-3 py-2 focus:outline-none focus:border-cyan-400">
+                    <option value="semanal" selected>Semana (7 Días)</option>
+                    <option value="quincenal">Quincena (15 Días)</option>
+                    <option value="mensual">Mes (30 Días)</option>
+                </select>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="clearData()" id="btnClear" disabled class="px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-400/20 text-amber-300 border border-amber-400/50 hover:bg-amber-400/30 transition-all flex items-center gap-1.5 disabled:opacity-40">
+                    <i class="fa-solid fa-broom"></i> Limpiar
+                </button>
+                <button onclick="exportExcel()" id="btnExpExcel" disabled class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 transition-all flex items-center gap-2 disabled:opacity-40">
+                    <i class="fa-solid fa-file-excel"></i> Exportar Excel
+                </button>
+                <button onclick="exportPDF()" id="btnExpPDF" disabled class="px-4 py-2 rounded-xl text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30 hover:bg-rose-500/30 transition-all flex items-center gap-2 disabled:opacity-40">
+                    <i class="fa-solid fa-file-pdf"></i> Exportar PDF
+                </button>
+            </div>
+        </section>
+
+        <!-- Tabla estilo reporte -->
+        <section class="glass-panel rounded-2xl overflow-hidden shadow-2xl">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs font-mono border-collapse">
+                    <thead class="bg-slate-900 text-slate-400 uppercase border-b border-slate-800 text-[11px]">
+                        <tr>
+                            <th class="p-3 text-center">No.</th>
+                            <th class="p-3">Nombre</th>
+                            <th class="p-3 text-right text-cyan-400 font-bold">SBC</th>
+                            <th class="p-3 text-right">SD</th>
+                            <th class="p-3 text-right font-semibold text-slate-200">Base Gravable (Bruto)</th>
+                            <th class="p-3 text-center">Dias</th>
+                            <th class="p-3 text-right">ISR Causado</th>
+                            <th class="p-3 text-right text-amber-400">Subsidio para el Empleo</th>
+                            <th class="p-3 text-right">ISR a Retener (Neto)</th>
+                            <th class="p-3 text-right text-rose-400">Cuota Obrera IMSS</th>
+                            <th class="p-3 text-right text-emerald-400 font-bold">Sueldo Neto a Pagar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaBody" class="divide-y divide-slate-800/60 text-slate-300">
+                        <tr><td colspan="11" class="p-8 text-center text-slate-500">Carga un archivo Excel para procesar los cálculos de nómina.</td></tr>
+                    </tbody>
+                    <tfoot id="tablaFoot" class="bg-slate-900/90 font-bold text-white border-t border-slate-700 hidden">
+                        <!-- Totales general -->
+                    </tfoot>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass-panel border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+        © 2026 Tax & Fiscal Tools. Desarrollado para uso libre y privado.
+    </footer>
+
+    <!-- Lógica de Negocio -->
+    <script>
+        let rawRowsData = [];
+        let empleados = [];
+
+        // Tablas oficiales de ISR 2026
+        const TABLA_ISR_SEMANAL = [
+            { limInf: 0.01, cuotaFija: 0.00, pct: 0.0192 },
+            { limInf: 194.47, cuotaFija: 3.71, pct: 0.0640 },
+            { limInf: 1650.68, cuotaFija: 96.95, pct: 0.1088 },
+            { limInf: 2900.88, cuotaFija: 232.96, pct: 0.1600 },
+            { limInf: 3372.12, cuotaFija: 308.35, pct: 0.1792 },
+            { limInf: 4037.33, cuotaFija: 427.56, pct: 0.2136 },
+            { limInf: 8142.76, cuotaFija: 1304.45, pct: 0.2352 },
+            { limInf: 12834.09, cuotaFija: 2407.86, pct: 0.3000 },
+            { limInf: 24502.46, cuotaFija: 5908.35, pct: 0.3200 },
+            { limInf: 32669.92, cuotaFija: 8521.94, pct: 0.3400 },
+            { limInf: 98009.67, cuotaFija: 30737.49, pct: 0.3500 }
+        ];
+
+        const TABLA_ISR_QUINCENAL = [
+            { limInf: 0.01, cuotaFija: 0.00, pct: 0.0192 },
+            { limInf: 416.71, cuotaFija: 7.95, pct: 0.0640 },
+            { limInf: 3537.16, cuotaFija: 207.75, pct: 0.1088 },
+            { limInf: 6216.16, cuotaFija: 499.20, pct: 0.1600 },
+            { limInf: 7225.96, cuotaFija: 660.75, pct: 0.1792 },
+            { limInf: 8651.41, cuotaFija: 916.20, pct: 0.2136 },
+            { limInf: 17448.76, cuotaFija: 2795.25, pct: 0.2352 },
+            { limInf: 27501.61, cuotaFija: 5159.70, pct: 0.3000 },
+            { limInf: 52505.26, cuotaFija: 12660.75, pct: 0.3200 },
+            { limInf: 70006.96, cuotaFija: 18261.30, pct: 0.3400 },
+            { limInf: 210020.71, cuotaFija: 65866.05, pct: 0.3500 }
+        ];
+
+        const TABLA_ISR_MENSUAL = [
+            { limInf: 0.01, cuotaFija: 0.00, pct: 0.0192 },
+            { limInf: 844.60, cuotaFija: 16.22, pct: 0.0640 },
+            { limInf: 7168.52, cuotaFija: 420.95, pct: 0.1088 },
+            { limInf: 12598.03, cuotaFija: 1011.68, pct: 0.1600 },
+            { limInf: 14644.65, cuotaFija: 1339.14, pct: 0.1792 },
+            { limInf: 17533.65, cuotaFija: 1856.84, pct: 0.2136 },
+            { limInf: 35362.84, cuotaFija: 5665.16, pct: 0.2352 },
+            { limInf: 55736.69, cuotaFija: 10457.09, pct: 0.3000 },
+            { limInf: 106410.51, cuotaFija: 25659.23, pct: 0.3200 },
+            { limInf: 141880.67, cuotaFija: 37009.69, pct: 0.3400 },
+            { limInf: 425642.00, cuotaFija: 133488.54, pct: 0.3500 }
+        ];
+
+        function getFactorIntegracion(anios) {
+            if (anios <= 1) return 1.0493;
+            if (anios === 2) return 1.0507;
+            if (anios === 3) return 1.0521;
+            if (anios === 4) return 1.0534;
+            if (anios === 5) return 1.0548;
+            if (anios <= 10) return 1.0562;
+            if (anios <= 15) return 1.0575;
+            if (anios <= 20) return 1.0589;
+            if (anios <= 25) return 1.0603;
+            return 1.0616;
+        }
+
+        function calcularISRDinamico(base, periodo) {
+            if (base <= 0) return 0;
+
+            let tabla = TABLA_ISR_SEMANAL;
+            if (periodo === 'quincenal') tabla = TABLA_ISR_QUINCENAL;
+            if (periodo === 'mensual') tabla = TABLA_ISR_MENSUAL;
+
+            let tr = tabla[0];
+            for (let i = tabla.length - 1; i >= 0; i--) {
+                if (base >= tabla[i].limInf) {
+                    tr = tabla[i];
+                    break;
+                }
+            }
+
+            const excedente = base - tr.limInf;
+            const impMarginal = excedente * tr.pct;
+            return tr.cuotaFija + impMarginal;
+        }
+
+        function parseAntiguedadAnios(val) {
+            if (!val && val !== 0) return 1;
+
+            if (typeof val === 'number') {
+                return Math.max(1, Math.floor(val));
+            }
+
+            if (typeof val === 'string') {
+                const num = parseFloat(val.trim().replace(/[^0-9.]/g, ''));
+                if (!isNaN(num) && num > 0) {
+                    return Math.max(1, Math.floor(num));
+                }
+            }
+
+            return 1;
+        }
+
+        function handleExcelUpload(e) {
+            let files = null;
+            if (e.dataTransfer) {
+                files = e.dataTransfer.files;
+            } else if (e.target) {
+                files = e.target.files;
+            }
+
+            if (!files || files.length === 0) return;
+            const file = files[0];
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    rawRowsData = XLSX.utils.sheet_to_json(firstSheet, { raw: false, defval: "" });
+
+                    recalcularNomina();
+                } catch (err) {
+                    console.error("Error al procesar Excel:", err);
+                    alert("Ocurrió un error al leer el archivo. Asegúrate de que las columnas tengan los encabezados correctos.");
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function recalcularNomina() {
+            if (!rawRowsData || rawRowsData.length === 0) return;
+
+            const periodo = document.getElementById('periodoSelect').value;
+
+            let defaultDias = 7;
+            if (periodo === 'quincenal') defaultDias = 15;
+            if (periodo === 'mensual') defaultDias = 30;
+
+            let umbralSubsidio = 2600; 
+            if (periodo === 'quincenal') umbralSubsidio = 5571.43;
+            if (periodo === 'mensual') umbralSubsidio = 11142.86;
+
+            empleados = rawRowsData.map((row, index) => {
+                const nombre = row['Nombre'] || row['NOMBRE'] || row['Empleado'] || `Empleado ${index + 1}`;
+                
+                const rawSBC = row['SBC'] || row['sbc'] || row['Sueldo Base Cotizacion'] || 0;
+                const sbc = parseFloat(String(rawSBC).replace(/[\$,]/g, '')) || 0;
+
+                const rawDias = row['Dias'] || row['Días'] || row['DIAS'] || defaultDias;
+                const dias = parseFloat(rawDias) || defaultDias;
+
+                const rawAnt = row['Antigüedad'] || row['Antiguedad'] || row['ANTIGÜEDAD'] || 1;
+                const anios = parseAntiguedadAnios(rawAnt);
+                const factor = getFactorIntegracion(anios);
+
+                const sd = Math.round((sbc / factor) * 100) / 100;
+                const base = Math.round((sd * dias) * 100) / 100;
+                const isrCausado = Math.round(calcularISRDinamico(base, periodo) * 100) / 100;
+                const subsidio = base > umbralSubsidio ? 0 : Math.round((dias * 17.61) * 100) / 100;
+                const isrNeto = Math.max(0, Math.round((isrCausado - subsidio) * 100) / 100);
+
+                const limite3SMG = 3 * 117.31; 
+                const excSBC = Math.max(0, sbc - limite3SMG);
+                const cuotaIMSS = Math.round(((sbc * 0.02375) + (excSBC * 0.004)) * dias * 100) / 100;
+
+                const sueldoNeto = Math.round((base - isrNeto - cuotaIMSS) * 100) / 100;
+
+                return {
+                    no: index + 1,
+                    nombre,
+                    sbc,
+                    sd,
+                    base,
+                    dias,
+                    isrCausado,
+                    subsidio,
+                    isrNeto,
+                    cuotaIMSS,
+                    sueldoNeto
+                };
+            });
+
+            renderTabla();
+        }
+
+        function renderTabla() {
+            const tbody = document.getElementById('tablaBody');
+            tbody.innerHTML = '';
+
+            if (empleados.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="11" class="p-8 text-center text-slate-500">Carga un archivo Excel para procesar los cálculos de nómina.</td></tr>`;
+                document.getElementById('tablaFoot').classList.add('hidden');
+                document.getElementById('btnClear').disabled = true;
+                document.getElementById('btnExpExcel').disabled = true;
+                document.getElementById('btnExpPDF').disabled = true;
+                return;
+            }
+
+            let totSBC = 0, totSD = 0, totBase = 0, totISRC = 0, totSub = 0, totISRN = 0, totIMSS = 0, totNeto = 0;
+
+            empleados.forEach(e => {
+                totSBC += e.sbc;
+                totSD += e.sd;
+                totBase += e.base;
+                totISRC += e.isrCausado;
+                totSub += e.subsidio;
+                totISRN += e.isrNeto;
+                totIMSS += e.cuotaIMSS;
+                totNeto += e.sueldoNeto;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/40 border-b border-slate-800/40 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-3 text-center text-slate-400">${e.no}</td>
+                    <td class="p-3 font-bold text-slate-100">${e.nombre}</td>
+                    <td class="p-3 text-right text-cyan-400 font-bold">${fmt(e.sbc)}</td>
+                    <td class="p-3 text-right text-slate-300">${fmt(e.sd)}</td>
+                    <td class="p-3 text-right font-semibold text-slate-200">${fmt(e.base)}</td>
+                    <td class="p-3 text-center text-slate-400">${e.dias.toFixed(2)}</td>
+                    <td class="p-3 text-right text-slate-300">${fmt(e.isrCausado)}</td>
+                    <td class="p-3 text-right text-amber-400 font-bold">${fmt(e.subsidio)}</td>
+                    <td class="p-3 text-right text-slate-300">${fmt(e.isrNeto)}</td>
+                    <td class="p-3 text-right text-rose-400">${fmt(e.cuotaIMSS)}</td>
+                    <td class="p-3 text-right text-emerald-400 font-bold text-sm">${fmt(e.sueldoNeto)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            const tfoot = document.getElementById('tablaFoot');
+            tfoot.classList.remove('hidden');
+            tfoot.innerHTML = `
+                <tr>
+                    <td colspan="2" class="p-3 text-cyan-400 font-bold uppercase">TOTALES</td>
+                    <td class="p-3 text-right text-cyan-400 font-extrabold">${fmt(totSBC)}</td>
+                    <td class="p-3 text-right text-slate-300 font-bold">${fmt(totSD)}</td>
+                    <td class="p-3 text-right font-extrabold text-white">${fmt(totBase)}</td>
+                    <td></td>
+                    <td class="p-3 text-right">${fmt(totISRC)}</td>
+                    <td class="p-3 text-right text-amber-400">${fmt(totSub)}</td>
+                    <td class="p-3 text-right">${fmt(totISRN)}</td>
+                    <td class="p-3 text-right text-rose-400">${fmt(totIMSS)}</td>
+                    <td class="p-3 text-right text-emerald-400 text-sm font-extrabold">${fmt(totNeto)}</td>
+                </tr>
+            `;
+
+            document.getElementById('btnClear').disabled = false;
+            document.getElementById('btnExpExcel').disabled = false;
+            document.getElementById('btnExpPDF').disabled = false;
+        }
+
+        function clearData() {
+            rawRowsData = [];
+            empleados = [];
+            document.getElementById('excelFile').value = '';
+            renderTabla();
+        }
+
+        function fmt(v) {
+            return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(v || 0);
+        }
+
+        function exportExcel() {
+            if (!empleados.length) return;
+
+            const periodo = document.getElementById('periodoSelect').value.toUpperCase();
+
+            const exportRows = empleados.map(e => ({
+                "No.": e.no,
+                "Nombre": e.nombre,
+                "SBC": e.sbc,
+                "SD": e.sd,
+                "Base Gravable (Bruto)": e.base,
+                "Dias": e.dias,
+                "ISR Causado": e.isrCausado,
+                "Subsidio para el Empleo": e.subsidio,
+                "ISR a Retener (Neto)": e.isrNeto,
+                "Cuota Obrera IMSS": e.cuotaIMSS,
+                "Sueldo Neto a Pagar": e.sueldoNeto
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(exportRows);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, `Nomina_${periodo}`);
+            XLSX.writeFile(wb, `Reporte_Nomina_${periodo}_${new Date().toISOString().slice(0,10)}.xlsx`);
+        }
+
+        // EXPORTACIÓN A PDF CON TOTALES ESTILIZADOS EN ENCABEZADO Y SD INCLUIDO
+        function exportPDF() {
+            if (!empleados || !empleados.length) {
+                alert("Primero carga un archivo Excel con datos.");
+                return;
+            }
+
+            const periodoSelect = document.getElementById('periodoSelect');
+            const periodoStr = periodoSelect.options[periodoSelect.selectedIndex].text;
+
+            // Encabezados centrados con estilo oscuro
+            const tableRows = [
+                [
+                    { text: 'NO.', style: 'tableHeader', alignment: 'center' },
+                    { text: 'NOMBRE DEL EMPLEADO', style: 'tableHeader', alignment: 'center' },
+                    { text: 'SBC', style: 'tableHeader', alignment: 'center' },
+                    { text: 'SD', style: 'tableHeader', alignment: 'center' },
+                    { text: 'BASE GRAVABLE', style: 'tableHeader', alignment: 'center' },
+                    { text: 'DÍAS', style: 'tableHeader', alignment: 'center' },
+                    { text: 'ISR CAUSADO', style: 'tableHeader', alignment: 'center' },
+                    { text: 'SUBSIDIO', style: 'tableHeader', alignment: 'center' },
+                    { text: 'ISR RETENIDO', style: 'tableHeader', alignment: 'center' },
+                    { text: 'CUOTA IMSS', style: 'tableHeader', alignment: 'center' },
+                    { text: 'SUELDO NETO', style: 'tableHeader', alignment: 'center' }
+                ]
+            ];
+
+            let totSBC = 0, totSD = 0, totBase = 0, totISRC = 0, totSub = 0, totISRN = 0, totIMSS = 0, totNeto = 0;
+
+            empleados.forEach(e => {
+                totSBC += e.sbc; 
+                totSD += e.sd; 
+                totBase += e.base; 
+                totISRC += e.isrCausado; 
+                totSub += e.subsidio;
+                totISRN += e.isrNeto; 
+                totIMSS += e.cuotaIMSS; 
+                totNeto += e.sueldoNeto;
+
+                tableRows.push([
+                    { text: e.no.toString(), fontSize: 7, alignment: 'center', color: '#64748b' },
+                    { text: e.nombre, fontSize: 7.5, bold: true, color: '#0f172a' },
+                    { text: fmt(e.sbc), fontSize: 7, alignment: 'right', color: '#0284c7', bold: true },
+                    { text: fmt(e.sd), fontSize: 7, alignment: 'right', color: '#334155' },
+                    { text: fmt(e.base), fontSize: 7.5, alignment: 'right', color: '#0f172a', bold: true },
+                    { text: e.dias.toFixed(2), fontSize: 7, alignment: 'center', color: '#475569' },
+                    { text: fmt(e.isrCausado), fontSize: 7, alignment: 'right', color: '#334155' },
+                    { text: fmt(e.subsidio), fontSize: 7, alignment: 'right', color: '#b45309', bold: true },
+                    { text: fmt(e.isrNeto), fontSize: 7, alignment: 'right', color: '#334155' },
+                    { text: fmt(e.cuotaIMSS), fontSize: 7, alignment: 'right', color: '#be123c', bold: true },
+                    { text: fmt(e.sueldoNeto), fontSize: 7.5, alignment: 'right', color: '#047857', bold: true }
+                ]);
+            });
+
+            // Fila de Totales con formato de encabezado oscuro y colSpan para NO. + NOMBRE
+            tableRows.push([
+                { text: 'TOTALES', colSpan: 2, bold: true, fontSize: 7.5, alignment: 'center', color: '#ffffff' },
+                {}, // Celda combinada requerida por colSpan
+                { text: fmt(totSBC), bold: true, fontSize: 7, alignment: 'right', color: '#38bdf8' },
+                { text: fmt(totSD), bold: true, fontSize: 7, alignment: 'right', color: '#ffffff' },
+                { text: fmt(totBase), bold: true, fontSize: 7.5, alignment: 'right', color: '#ffffff' },
+                { text: '', fontSize: 7 },
+                { text: fmt(totISRC), bold: true, fontSize: 7, alignment: 'right', color: '#ffffff' },
+                { text: fmt(totSub), bold: true, fontSize: 7, alignment: 'right', color: '#fbbf24' },
+                { text: fmt(totISRN), bold: true, fontSize: 7, alignment: 'right', color: '#ffffff' },
+                { text: fmt(totIMSS), bold: true, fontSize: 7, alignment: 'right', color: '#f87171' },
+                { text: fmt(totNeto), bold: true, fontSize: 8, alignment: 'right', color: '#4ade80' }
+            ]);
+
+            const docDefinition = {
+                pageSize: 'LETTER',
+                pageOrientation: 'landscape',
+                pageMargins: [28, 28, 28, 28],
+                content: [
+                    {
+                        columns: [
+                            [
+                                { text: 'REPORTE GENERAL DE NÓMINA', fontSize: 13, bold: true, color: '#0f172a' },
+                                { text: `PERÍODO PROCESADO: ${periodoStr.toUpperCase()}`, fontSize: 8.5, bold: true, color: '#64748b', margin: [0, 2, 0, 0] }
+                            ],
+                            [
+                                { text: `FECHA DE EMISIÓN: ${new Date().toLocaleDateString('es-MX')}`, fontSize: 9, bold: true, alignment: 'right', color: '#0284c7' },
+                                { text: `TOTAL EMPLEADOS: ${empleados.length}`, fontSize: 8, alignment: 'right', color: '#475569', margin: [0, 2, 0, 0] }
+                            ]
+                        ]
+                    },
+                    { canvas: [{ type: 'line', x1: 0, y1: 6, x2: 736, y2: 6, lineWidth: 1.5, lineColor: '#0ea5e9' }], margin: [0, 0, 0, 10] },
+
+                    {
+                        table: {
+                            headerRows: 1,
+                            widths: ['3.5%', '20.5%', '8.5%', '8%', '10.5%', '4.5%', '8.5%', '8.5%', '8.5%', '8.5%', '10.5%'],
+                            body: tableRows
+                        },
+                        layout: {
+                            fillColor: (rowIndex) => {
+                                if (rowIndex === 0 || rowIndex === tableRows.length - 1) return '#0f172a'; // Mismo fondo oscuro para Encabezado y Totales
+                                return rowIndex % 2 === 0 ? '#f8fafc' : null;
+                            },
+                            hLineWidth: (i, node) => (i === 0 || i === 1 || i === node.table.body.length - 1 || i === node.table.body.length) ? 1 : 0.5,
+                            vLineWidth: () => 0.5,
+                            hLineColor: (i, node) => (i === 0 || i === 1 || i === node.table.body.length - 1 || i === node.table.body.length) ? '#0f172a' : '#e2e8f0',
+                            vLineColor: () => '#cbd5e1'
+                        },
+                        margin: [0, 0, 0, 10]
+                    }
+                ],
+                styles: {
+                    tableHeader: {
+                        fontSize: 7.5,
+                        bold: true,
+                        color: '#ffffff',
+                        margin: [0, 3, 0, 3]
+                    }
+                },
+                defaultStyle: {
+                    font: 'Roboto'
+                }
+            };
+
+            pdfMake.createPdf(docDefinition).open();
+        }
+
+        // Eventos Drag & Drop
+        const dropZone = document.getElementById('dropZone');
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, e => e.preventDefault(), false);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+        });
+
+        dropZone.addEventListener('drop', e => {
+            handleExcelUpload(e);
+        });
+    </script>
+</body>
+</html>
