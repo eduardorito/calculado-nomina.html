@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Nómina Integral | Tax & Fiscal Tools Pro</title>
+    <title>Calculadora de Nómina Integral 2026 (SBC a Neto) | Tax Calc Pro</title>
+    <meta name="description" content="Calculadora de nómina integral en México 2026: cálculo inverso desde Salario Base de Cotización (SBC) a Salario Diario, ISR, Subsidio al Empleo y Cuota Obrera IMSS masiva en Excel.">
+    <link rel="canonical" href="https://eduardorito.github.io/calculado-nomina.html/">
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -32,31 +34,67 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8T4GC05LYQ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-8T4GC05LYQ');
+    </script>
+
+    <!-- Google AdSense Verification Script -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8697334409468964" crossorigin="anonymous"></script>
+
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #080c14; color: #f1f5f9; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #080c14;
+            color: #f1f5f9;
+            background-image: 
+                radial-gradient(at 10% 10%, rgba(0, 240, 255, 0.05) 0px, transparent 50%),
+                radial-gradient(at 90% 90%, rgba(59, 130, 246, 0.06) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
         .glass-panel { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .drop-zone.dragover { border-color: #00f0ff; background-color: rgba(0, 240, 255, 0.05); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
-    <!-- Header -->
+    <!-- Header / Navbar -->
     <header class="sticky top-0 z-30 glass-panel border-b border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-cyan-500/20">
+                <a href="https://eduardorito.github.io/" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-cyan-500/20" title="Volver al Portal Principal">
                     <i class="fa-solid fa-users-gear"></i>
-                </div>
+                </a>
                 <div>
-                    <h1 class="font-bold text-lg bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400">
-                        Nómina Pro (SBC -> SD -> Base Gravable)
+                    <h1 class="font-bold text-base sm:text-lg bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400">
+                        Nómina Integral Pro 2026 (SBC ➔ Neto)
                     </h1>
-                    <p class="text-[11px] text-slate-400 font-medium">Cálculo Inverso desde SBC, ISR, Subsidio e IMSS Masivo</p>
+                    <p class="text-[11px] text-slate-400 font-medium">Cálculo Inverso desde SBC, ISR, Subsidio al Empleo e IMSS Masivo</p>
                 </div>
             </div>
-            <a href="https://buymeacoffee.com/eduardorito" target="_blank" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 transition-all flex items-center gap-2">
-                <i class="fa-solid fa-mug-hot"></i> <span>Invítame un café</span>
-            </a>
+
+            <!-- Navegación Interna entre Herramientas -->
+            <nav aria-label="Navegación principal" class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+                <a href="https://eduardorito.github.io/" class="px-3 py-1.5 rounded-lg bg-slate-800/80 text-slate-300 hover:text-cyan-400 border border-slate-700/60 transition-all">
+                    <i class="fa-solid fa-house mr-1"></i> Inicio
+                </a>
+                <a href="https://eduardorito.github.io/lector-xml-sat/" class="px-3 py-1.5 rounded-lg bg-slate-800/80 text-slate-300 hover:text-cyan-400 border border-slate-700/60 transition-all">
+                    Lector XML
+                </a>
+                <a href="https://eduardorito.github.io/calculadora-isr/" class="px-3 py-1.5 rounded-lg bg-slate-800/80 text-slate-300 hover:text-cyan-400 border border-slate-700/60 transition-all">
+                    Calc. ISR
+                </a>
+                <a href="https://eduardorito.github.io/retenciones-sat/" class="px-3 py-1.5 rounded-lg bg-slate-800/80 text-slate-300 hover:text-cyan-400 border border-slate-700/60 transition-all">
+                    Retenciones
+                </a>
+                <a href="https://buymeacoffee.com/eduardorito" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-mug-hot"></i> <span>Invítame un café</span>
+                </a>
+            </nav>
         </div>
     </header>
 
@@ -85,7 +123,10 @@
                     <option value="mensual">Mes (30 Días)</option>
                 </select>
             </div>
-            <div class="flex items-center space-x-2">
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="descargarPlantilla()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:border-cyan-400 transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-download text-cyan-400"></i> Plantilla Excel
+                </button>
                 <button onclick="clearData()" id="btnClear" disabled class="px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-400/20 text-amber-300 border border-amber-400/50 hover:bg-amber-400/30 transition-all flex items-center gap-1.5 disabled:opacity-40">
                     <i class="fa-solid fa-broom"></i> Limpiar
                 </button>
@@ -118,7 +159,7 @@
                         </tr>
                     </thead>
                     <tbody id="tablaBody" class="divide-y divide-slate-800/60 text-slate-300">
-                        <tr><td colspan="11" class="p-8 text-center text-slate-500">Carga un archivo Excel para procesar los cálculos de nómina.</td></tr>
+                        <tr><td colspan="11" class="p-8 text-center text-slate-500">Carga un archivo Excel para procesar los cálculos de nómina o descarga la plantilla de ejemplo.</td></tr>
                     </tbody>
                     <tfoot id="tablaFoot" class="bg-slate-900/90 font-bold text-white border-t border-slate-700 hidden">
                         <!-- Totales general -->
@@ -127,11 +168,127 @@
             </div>
         </section>
 
+        <!-- TARJETAS TÉCNICAS -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+            <div class="glass-panel rounded-2xl p-6 space-y-3">
+                <div class="flex items-center gap-2.5 text-cyan-400 font-bold text-sm">
+                    <i class="fa-solid fa-lock"></i>
+                    <h3>Procesamiento Local y Confidencial</h3>
+                </div>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    Toda la plantilla laboral, salarios base de cotización y retenciones se procesan en la memoria local de tu navegador. Los datos de tus trabajadores <strong class="text-slate-200">jamás se envían a servidores externos</strong>.
+                </p>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6 space-y-3">
+                <div class="flex items-center gap-2.5 text-blue-400 font-bold text-sm">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                    <h3>Desintegración SBC y LFT Vigente</h3>
+                </div>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    Calcula automáticamente el Salario Diario (SD) a partir del Salario Base de Cotización (SBC) aplicando los factores de integración por antigüedad conforme a la Ley Federal del Trabajo y la Ley del Seguro Social.
+                </p>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6 space-y-3">
+                <div class="flex items-center gap-2.5 text-emerald-400 font-bold text-sm">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    <h3>Reportes Listos para Contabilidad</h3>
+                </div>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    Obtén en un clic el resumen general de nómina semanal, quincenal o mensual con sumatorias de ISR causado, subsidio al empleo, retenciones IMSS y dispersión neta tanto en Excel como en formato PDF institucional.
+                </p>
+            </div>
+        </section>
+
+        <!-- GUÍA PRÁCTICA, METODOLOGÍA LFT / IMSS / LISR Y PREGUNTAS FRECUENTES (SEO & ADSENSE) -->
+        <article class="glass-panel rounded-2xl p-6 sm:p-8 space-y-8 text-slate-300 leading-relaxed">
+            <div class="border-b border-slate-800 pb-4">
+                <h2 class="text-lg sm:text-xl font-bold text-white">Guía de Cálculo de Nómina Integral en México (SBC ➔ SD ➔ Sueldo Neto)</h2>
+                <p class="text-xs sm:text-sm text-slate-400 mt-1">Fundamento en la Ley Federal del Trabajo (LFT), Ley del Seguro Social (LSS) y Ley del Impuesto Sobre la Renta (LISR) 2026.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs sm:text-sm">
+                <div class="space-y-3">
+                    <h3 class="text-cyan-400 font-bold text-base">1. ¿Cómo se obtiene el Salario Diario (SD) desde el SBC?</h3>
+                    <p class="text-slate-400">
+                        Cuando se cuenta con las cédulas de determinación del IMSS (SUA/IDSE), el dato disponible suele ser el <strong class="text-slate-200">Salario Base de Cotización (SBC)</strong>, el cual ya incluye la proporción diaria de aguinaldo (15 días mínimos de ley) y prima vacacional (25% sobre los días de vacaciones correspondientes a la antigüedad).
+                    </p>
+                    <p class="text-slate-400">
+                        Para reconstruir la nómina ordinaria, la herramienta divide el SBC entre el <strong class="text-slate-200">Factor de Integración</strong> correspondiente a los años de servicio del trabajador (<span class="font-mono text-cyan-300">1.0493</span> para el primer año con 12 días de vacaciones, <span class="font-mono text-cyan-300">1.0507</span> para el segundo año con 14 días, y así sucesivamente). Multiplicando el SD resultante por los días laborados se obtiene la <strong class="text-slate-200">Base Gravable</strong>.
+                    </p>
+                </div>
+
+                <div class="space-y-3">
+                    <h3 class="text-cyan-400 font-bold text-base">2. Determinación de ISR, Subsidio y Cuota Obrera IMSS</h3>
+                    <ul class="space-y-2 text-slate-400">
+                        <li><strong class="text-slate-200">ISR Causado y Subsidio al Empleo:</strong> Sobre la Base Gravable del período (semanal, quincenal o mensual) se aplica la tarifa oficial del Art. 96 de la LISR 2026 y se acredita el Subsidio para el Empleo vigente cuando el ingreso no rebasa el límite establecido.</li>
+                        <li><strong class="text-slate-200">Cuota Obrera IMSS:</strong> Se calcula multiplicando el SBC por los porcentajes legales a cargo del trabajador (Enfermedades y Maternidad, Invalidez y Vida, Cesantía en Edad Avanzada y Vejez) más la cuota adicional de 0.40% sobre el excedente de 3 veces la UMA diaria.</li>
+                        <li><strong class="text-slate-200">Sueldo Neto a Pagar:</strong> Es el importe final a dispersar al trabajador (<span class="font-mono text-emerald-400">Base Gravable - ISR Retenido - Cuota Obrera IMSS</span>).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Tabla de Factores de Integración -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5 space-y-3 text-xs">
+                <h3 class="text-emerald-400 font-bold text-sm sm:text-base flex items-center gap-2">
+                    <i class="fa-solid fa-table"></i> Tabla de Factores de Integración Mínimos de Ley (LFT Vigente)
+                </h3>
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 font-mono">
+                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                        <span class="block text-slate-500">Año 1 (12 días vac.)</span>
+                        <span class="text-cyan-400 font-bold">Factor: 1.0493</span>
+                    </div>
+                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                        <span class="block text-slate-500">Año 2 (14 días vac.)</span>
+                        <span class="text-cyan-400 font-bold">Factor: 1.0507</span>
+                    </div>
+                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                        <span class="block text-slate-500">Año 3 (16 días vac.)</span>
+                        <span class="text-cyan-400 font-bold">Factor: 1.0521</span>
+                    </div>
+                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                        <span class="block text-slate-500">Año 4 (18 días vac.)</span>
+                        <span class="text-cyan-400 font-bold">Factor: 1.0534</span>
+                    </div>
+                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                        <span class="block text-slate-500">Año 5 (20 días vac.)</span>
+                        <span class="text-cyan-400 font-bold">Factor: 1.0548</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preguntas Frecuentes -->
+            <div class="space-y-4">
+                <h3 class="text-white font-bold text-base">Preguntas Frecuentes sobre el Procesamiento de Nómina</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800/80 space-y-1.5">
+                        <h4 class="font-bold text-slate-200">¿Qué encabezados debe llevar mi hoja de Excel?</h4>
+                        <p class="text-slate-400">Tu archivo `.xlsx` o `.xls` debe incluir en la primera fila los encabezados <span class="font-mono text-cyan-300">Nombre</span>, <span class="font-mono text-cyan-300">SBC</span>, <span class="font-mono text-cyan-300">Dias</span> y <span class="font-mono text-cyan-300">Antigüedad</span> (en años enteros). Si omites los días, el sistema tomará automáticamente 7, 15 o 30 días según el período seleccionado.</p>
+                    </div>
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800/80 space-y-1.5">
+                        <h4 class="font-bold text-slate-200">¿Puedo cambiar entre nómina semanal, quincenal y mensual sin volver a subir el archivo?</h4>
+                        <p class="text-slate-400">Sí. Una vez cargado tu libro de Excel, basta con cambiar el selector de <strong>Período de Nómina</strong> en la barra superior para que toda la tabla recalculé al instante los topes de tarifa ISR, días del período, subsidio y cuotas IMSS.</p>
+                    </div>
+                </div>
+            </div>
+        </article>
+
     </main>
 
-    <!-- Footer -->
-    <footer class="glass-panel border-t border-slate-800 py-4 text-center text-xs text-slate-500">
-        © 2026 Tax & Fiscal Tools. Desarrollado para uso libre y privado.
+    <!-- Footer con Enlaces Reales Rastreables -->
+    <footer class="glass-panel border-t border-slate-800 py-6">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+            <p>© 2026 Tax Calc Pro — Herramientas Fiscales y de Nómina para México.</p>
+            <div class="flex flex-wrap items-center justify-center gap-5 font-medium">
+                <a href="https://eduardorito.github.io/" class="hover:text-cyan-400 transition-colors">Inicio</a>
+                <a href="https://eduardorito.github.io/lector-xml-sat/" class="hover:text-cyan-400 transition-colors">Lector XML SAT</a>
+                <a href="https://eduardorito.github.io/calculadora-isr/" class="hover:text-cyan-400 transition-colors">Calculadora ISR</a>
+                <a href="https://eduardorito.github.io/retenciones-sat/" class="hover:text-cyan-400 transition-colors">Retenciones SAT</a>
+                <a href="https://eduardorito.github.io/privacidad.html" class="hover:text-cyan-400 transition-colors">Política de Privacidad</a>
+                <a href="https://eduardorito.github.io/contacto.html" class="hover:text-cyan-400 transition-colors">Contacto</a>
+            </div>
+        </div>
     </footer>
 
     <!-- Lógica de Negocio -->
@@ -321,7 +478,7 @@
             tbody.innerHTML = '';
 
             if (empleados.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="11" class="p-8 text-center text-slate-500">Carga un archivo Excel para procesar los cálculos de nómina.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="11" class="p-8 text-center text-slate-500">Carga un archivo Excel para procesar los cálculos de nómina o descarga la plantilla de ejemplo.</td></tr>`;
                 document.getElementById('tablaFoot').classList.add('hidden');
                 document.getElementById('btnClear').disabled = true;
                 document.getElementById('btnExpExcel').disabled = true;
@@ -392,6 +549,18 @@
             return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(v || 0);
         }
 
+        function descargarPlantilla() {
+            const ejemplo = [
+                { Nombre: 'Juan Carlos Pérez López', SBC: 350.00, Dias: 7, Antigüedad: 1 },
+                { Nombre: 'María Fernanda Gómez Ruiz', SBC: 520.50, Dias: 7, Antigüedad: 3 },
+                { Nombre: 'Roberto Sánchez Martínez', SBC: 890.00, Dias: 7, Antigüedad: 5 }
+            ];
+            const ws = XLSX.utils.json_to_sheet(ejemplo);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Plantilla_Nomina');
+            XLSX.writeFile(wb, 'Plantilla_Nomina_SBC_2026.xlsx');
+        }
+
         function exportExcel() {
             if (!empleados.length) return;
 
@@ -427,7 +596,6 @@
             const periodoSelect = document.getElementById('periodoSelect');
             const periodoStr = periodoSelect.options[periodoSelect.selectedIndex].text;
 
-            // Encabezados centrados con estilo oscuro
             const tableRows = [
                 [
                     { text: 'NO.', style: 'tableHeader', alignment: 'center' },
@@ -471,10 +639,9 @@
                 ]);
             });
 
-            // Fila de Totales con formato de encabezado oscuro y colSpan para NO. + NOMBRE
             tableRows.push([
                 { text: 'TOTALES', colSpan: 2, bold: true, fontSize: 7.5, alignment: 'center', color: '#ffffff' },
-                {}, // Celda combinada requerida por colSpan
+                {},
                 { text: fmt(totSBC), bold: true, fontSize: 7, alignment: 'right', color: '#38bdf8' },
                 { text: fmt(totSD), bold: true, fontSize: 7, alignment: 'right', color: '#ffffff' },
                 { text: fmt(totBase), bold: true, fontSize: 7.5, alignment: 'right', color: '#ffffff' },
@@ -513,7 +680,7 @@
                         },
                         layout: {
                             fillColor: (rowIndex) => {
-                                if (rowIndex === 0 || rowIndex === tableRows.length - 1) return '#0f172a'; // Mismo fondo oscuro para Encabezado y Totales
+                                if (rowIndex === 0 || rowIndex === tableRows.length - 1) return '#0f172a';
                                 return rowIndex % 2 === 0 ? '#f8fafc' : null;
                             },
                             hLineWidth: (i, node) => (i === 0 || i === 1 || i === node.table.body.length - 1 || i === node.table.body.length) ? 1 : 0.5,
